@@ -218,6 +218,7 @@ signal.signal(signal.SIGINT, hndl)
         logging.info(f"Job {self.job_id} - Starting Rendering")
         self.render_start = time.time()
         self.render()
+        self.state = "Finishing Up"
         logging.info(f"Job {self.job_id} - Rendering Complete")
 
         logging.info(f"Job {self.job_id} - Starting Frame Upload")
