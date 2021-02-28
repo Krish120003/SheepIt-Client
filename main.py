@@ -24,16 +24,23 @@ class SheepQtInterface(QObject):
     setTimeElasped = Signal(str)
     setEngineDetails = Signal(str)
 
+    setSessionPoints = Signal(str)
+    setUserPoints = Signal(str)
+
+    setLastFrame = Signal(str)
+
     setFramesRendered = Signal(int)
     setProgress = Signal(int)
-    setSessionPoints = Signal(int)
-    setUserPoints = Signal(int)
 
     def __init__(self):
         QObject.__init__(self)
 
         # Statics
-        self.colors = {"rendering": "2CC056", "processing": "FE9905"}
+        self.colors = {
+            "rendering": "2CC056",
+            "processing": "FE9905",
+            "paused": "777777",
+        }
         self.interface = SheepItInterface()
         self.interface.login("FlipFX", "24a137Eem5XZDHosUqWNHHRcE7Wq7TulA3k8BTSe")
 
@@ -48,7 +55,7 @@ class SheepQtInterface(QObject):
         self.job_name = ""
         self.frames_rendered = 0
         self.session_points = 0
-        self.total_points = 0
+        self.total_points = 500
 
         # UI Update Loop
         self.uiTimer = QTimer()
@@ -64,69 +71,72 @@ class SheepQtInterface(QObject):
         self.paused_ping_counter = 1
 
     def interact(self):
+
         if not self.paused:
             # Requesting Jobs
             if not self.interface.job:
                 logging.info("No current job, requesting one")
                 stats = self.interface.get_job(1)
-                try:
-                    self.session_points = stats["@credits_session"]
-                    self.total_points = stats["@credits_total"]
-
-                    self.setSessionPoints.emit(self.session_points)
-                    self.setUserPoints.emit(self.total_points)
-                except:
-                    pass
+                self.total_points = stats.get("@credits_total")
 
             if self.interface.job and self.interface.job.state == "Done":
+                logging.info("Updating Last Frame Image")
+
+                if self.interface.job.output_file:
+                    self.setLastFrame.emit(self.interface.job.output_file)
+                # self.last_frame_time.emit(self.interface.job.engine.time_elapsed)
+
                 logging.info("Job complete, requesting new job")
                 self.frames_rendered += 1
                 stats = self.interface.get_job(1)
-                try:
-                    self.session_points = stats["@credits_session"]
-                    self.total_points = stats["@credits_total"]
 
-                    self.setSessionPoints.emit(self.session_points)
-                    self.setUserPoints.emit(self.total_points)
-                except:
-                    pass
+                self.session_points = stats["@credits_session"]
+                self.total_points = stats["@credits_total"]
+
+                return
 
             if not self.interface.job.started:
                 self.interface.job.start()
 
-            self.status = self.interface.job.state
-            if self.interface.job.engine:
-                self.frame_time_elasped = self.interface.job.engine.time_elapsed
-                self.job_name = self.interface.job.file_name.replace(".blend", "")
-                if self.interface.job.engine.status == RenderStatus.RENDERING:
-                    temp = self.interface.job.engine.tiles
-                    self.progress = round(temp[0] / temp[1] * 10000)
-                    self.percent_progress = str(round(temp[0] / temp[1] * 100)) + "%"
-
-                    self.color = self.colors.get("rendering")
-
-                    self.status = "Rendering"
-
-                elif self.interface.job.engine.status == RenderStatus.COMPOSITING:
-                    self.progress = 10000
-                    self.percent_progress = "100%"
-
-                    self.color = self.colors.get("processing")
-
-                    self.status = "Compositing"
-
-                else:
-                    self.progress = 10000
-                    self.percent_progress = ""
-
-                    self.color = self.colors.get("processing")
-            else:
-                pass
-
         else:
-            if self.paused_ping_counter % 120 == 0:
+            if self.paused_ping_counter % 100000 == 0:
                 self.interface.job.ping()
             self.paused_ping_counter += 1
+
+        self.status = self.interface.job.state
+        if self.interface.job.engine:
+            self.frame_time_elasped = self.interface.job.engine.time_elapsed
+            self.job_name = self.interface.job.file_name.replace(".blend", "")
+            if self.interface.job.engine.status == RenderStatus.RENDERING:
+                temp = self.interface.job.engine.tiles
+                self.progress = round(temp[0] / temp[1] * 10000)
+                self.percent_progress = str(round(temp[0] / temp[1] * 100)) + "%"
+
+                self.color = self.colors.get("rendering")
+
+                self.status = "Rendering"
+
+            elif self.interface.job.engine.status == RenderStatus.COMPOSITING:
+                self.progress = 10000
+                self.percent_progress = "100%"
+
+                self.color = self.colors.get("processing")
+
+                self.status = "Compositing"
+
+            else:
+                self.progress = 10000
+                self.percent_progress = ""
+
+                self.color = self.colors.get("processing")
+
+        if self.paused and self.status == "Done":
+            self.status = "Paused"
+            self.progress = 10000
+            self.color = self.colors.get("paused")
+            self.job_name = ""
+            self.percent_progress = ""
+            self.frame_time_elasped = ""
 
     def updateUI(self):
         self.setStatus.emit(self.status)
@@ -138,6 +148,10 @@ class SheepQtInterface(QObject):
             f"Cycles - CPU - {self.job_name}" if self.job_name else ""
         )
         self.setFramesRendered.emit(self.frames_rendered)
+
+        self.setUserPoints.emit(str(self.total_points))
+        self.setSessionPoints.emit(str(self.session_points))
+
         self.setSessionTime.emit(self._format_time(time.time(), self.session_start))
 
     def _format_time(self, t1, t2):
