@@ -60,6 +60,8 @@ class SheepJob(threading.Thread):
 
         self.status = {"code": 0}
 
+        self.output_file = None
+
         logging.debug(working_dir)
 
     def ping(self):
@@ -67,7 +69,7 @@ class SheepJob(threading.Thread):
             self.ops["keepmealive"],
             params={"job": self.job_id, "frame": self.frame, "extras": ""},
         )
-        logging.info(f"Session Heartbeat Sent")
+        logging.info(f"Session Heartbeat Sent" + str(r.content))
 
     def get_binary(self):
         self.bin_file_zip = os.path.abspath(
@@ -128,6 +130,8 @@ signal.signal(signal.SIGINT, hndl)
             if file.endswith("_out.png"):
                 upload_name = file
                 break
+
+        self.output_file = os.path.join(os.getcwd(), f"worker/{upload_name}")
 
         f = open(os.path.join(os.getcwd(), f"worker/{upload_name}"), "rb")
         files = {"file": (upload_name, f)}
