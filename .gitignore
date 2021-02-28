@@ -79,3 +79,4 @@ worker/
 blends/
 
 .vscode
+*.log
