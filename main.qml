@@ -842,9 +842,11 @@ Window {
         function onSetLastFrame(path)
         {
             lastImage.source = path
-            console.log(path)
         }
-
+        function onSetLastFrameTime(time)
+        {
+            lastFrameText.text = time
+        }
     }
     onClosing: {
         backend.safeClose()

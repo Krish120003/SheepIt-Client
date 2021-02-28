@@ -28,6 +28,7 @@ class SheepQtInterface(QObject):
     setUserPoints = Signal(str)
 
     setLastFrame = Signal(str)
+    setLastFrameTime = Signal(str)
 
     setFramesRendered = Signal(int)
     setProgress = Signal(int)
@@ -84,7 +85,7 @@ class SheepQtInterface(QObject):
 
                 if self.interface.job.output_file:
                     self.setLastFrame.emit(self.interface.job.output_file)
-                # self.last_frame_time.emit(self.interface.job.engine.time_elapsed)
+                    self.setLastFrameTime.emit(self.interface.job.engine.time_elapsed)
 
                 logging.info("Job complete, requesting new job")
                 self.frames_rendered += 1
