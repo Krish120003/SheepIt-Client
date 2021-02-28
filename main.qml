@@ -781,8 +781,7 @@ Window {
     Connections {
         target: backend
 
-        function onSetPause(paused) {
-            console.log(paused)
+        function onSetPause(paused) {``
             if (paused) {
                 pauseButtonIcon.source = "assets/Start.svg"
             } else {
@@ -832,12 +831,18 @@ Window {
 
         function onSetSessionPoints(points)
         {
-            pointsEarned.text = qsTr(points.toString())
+            pointsEarned.text = points
         }
         
-        function setOnSetUserPoints(points)
+        function onSetUserPoints(points)
         {
-            currentPoints.text = qsTr(points.toString())
+            currentPoints.text = points
+        }
+
+        function onSetLastFrame(path)
+        {
+            lastImage.source = path
+            console.log(path)
         }
 
     }
