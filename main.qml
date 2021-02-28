@@ -531,6 +531,9 @@ Window {
                                     onExited: {
                                         toolTipPause.visible = false
                                     }
+                                    onClicked: {
+                                        backend.togglePause()
+                                    }
                                 }
 
                                 Image {
@@ -761,6 +764,18 @@ Window {
     }
     Timer {
         id: timer
+    }
+    Connections {
+        target: backend
+
+        function onSetPause(paused) {
+            console.log(paused)
+            if (paused) {
+                pauseButtonIcon.source = "assets/Start.svg"
+            } else {
+                pauseButtonIcon.source = "assets/Pause.svg"
+            }
+        }
     }
 }
 
