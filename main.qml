@@ -43,7 +43,7 @@ Window {
                 anchors.topMargin: 0
 
                 Image {
-                    id: image
+                    id: brandingLogo
                     width: 60
                     height: 100
                     anchors.left: parent.left
@@ -58,6 +58,20 @@ Window {
                     anchors.leftMargin: 10
                     fillMode: Image.PreserveAspectFit
                     z: 1
+                }
+
+                Image {
+                    id: settingsButton
+                    x: 480
+                    y: 20
+                    width: 28
+                    height: 28
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    source: "assets/Gear.svg"
+                    anchors.rightMargin: 20
+                    antialiasing: true
+                    fillMode: Image.PreserveAspectFit
                 }
             }
 
@@ -97,8 +111,8 @@ Window {
 
                     Rectangle {
                         id: progressBar
-                        width: progressBackground.width * 0.21
-                        color: "#2cc056"
+                        width: progressBackground.width * 0
+                        color: "#777777"
                         anchors.left: progressBackground.left
                         anchors.top: progressBackground.top
                         anchors.bottom: progressBackground.bottom
@@ -112,7 +126,7 @@ Window {
                         id: progressBackground
                         y: 100
                         height: 36
-                        color: "#402cc056"
+                        color: "#40777777"
                         radius: 18
                         border.color: "#95dfaa"
                         border.width: 0
@@ -143,8 +157,8 @@ Window {
 
                     Text {
                         id: status
-                        color: "#2cc056"
-                        text: qsTr("Rendering")
+                        color: "#777777"
+                        text: qsTr("Starting")
                         anchors.left: parent.left
                         anchors.top: parent.top
                         font.pixelSize: 32
@@ -158,7 +172,7 @@ Window {
                         id: engineDetails
                         x: 20
                         color: "#777777"
-                        text: qsTr("Cycles - CPU")
+                        text: qsTr("")
                         anchors.top: status.bottom
                         font.pixelSize: 16
                         anchors.topMargin: 5
@@ -170,7 +184,7 @@ Window {
                         id: percentage
                         x: 397
                         color: "#777777"
-                        text: qsTr("21%")
+                        text: qsTr("")
                         anchors.right: parent.right
                         anchors.top: parent.top
                         font.pixelSize: 26
@@ -185,7 +199,7 @@ Window {
                         id: timeElasped
                         x: 377
                         color: "#777777"
-                        text: "1 min 2 sec"
+                        text: ""
                         anchors.right: parent.right
                         anchors.top: percentage.bottom
                         font.pixelSize: 16
@@ -280,7 +294,6 @@ Window {
                             anchors.rightMargin: 17
                             anchors.leftMargin: 10
                             autoTransform: false
-                            asynchronous: true
                             layer.wrapMode: ShaderEffectSource.ClampToEdge
                             antialiasing: true
                             clip: false
@@ -299,7 +312,7 @@ Window {
                             anchors.topMargin: 180
                             anchors.rightMargin: -255
                             Text {
-                                id: titlePointsEarned1
+                                id: lastFrameTitle
                                 color: "#575a68"
                                 text: qsTr("Last Frame")
                                 anchors.left: parent.left
@@ -314,13 +327,13 @@ Window {
                             }
 
                             Text {
-                                id: pointsEarned1
+                                id: lastFrameText
                                 width: 248
                                 height: 21
                                 color: "#2d3142"
-                                text: qsTr("3 mins 42 seconds")
+                                text: qsTr("N/A")
                                 anchors.left: parent.left
-                                anchors.top: titlePointsEarned1.bottom
+                                anchors.top: lastFrameTitle.bottom
                                 font.pixelSize: 20
                                 anchors.topMargin: 0
                                 anchors.leftMargin: 0
@@ -366,7 +379,7 @@ Window {
                                     width: 126
                                     height: 21
                                     color: "#2d3142"
-                                    text: qsTr("3,214")
+                                    text: qsTr("0")
                                     anchors.left: parent.left
                                     anchors.top: titlePointsEarned.bottom
                                     font.pixelSize: 20
@@ -401,7 +414,7 @@ Window {
                                     width: 126
                                     height: 21
                                     color: "#2d3142"
-                                    text: qsTr("85,392")
+                                    text: qsTr("0")
                                     anchors.left: parent.left
                                     anchors.top: titleCurrentPoints.bottom
                                     font.pixelSize: 20
@@ -435,7 +448,7 @@ Window {
                                     width: 126
                                     height: 21
                                     color: "#2d3142"
-                                    text: qsTr("3")
+                                    text: qsTr("0")
                                     anchors.left: parent.left
                                     anchors.top: titleFramesRendered.bottom
                                     font.pixelSize: 20
@@ -470,7 +483,7 @@ Window {
                                     width: 182
                                     height: 21
                                     color: "#2d3142"
-                                    text: qsTr("8 mins 7 seconds")
+                                    text: qsTr("0 sec")
                                     anchors.left: parent.left
                                     anchors.top: titleSessionDuration.bottom
                                     font.letterSpacing: 0
@@ -525,7 +538,7 @@ Window {
                                     z: 2
                                     hoverEnabled: true
                                     onEntered: {
-                                        delay(1000, () => toolTipPause.visible
+                                        delay(500, () => toolTipPause.visible
                                               = pauseMouseArea.containsMouse)
                                     }
                                     onExited: {
@@ -609,7 +622,7 @@ Window {
                                     z: 2
                                     hoverEnabled: true
                                     onEntered: {
-                                        delay(1000, () => toolTipBlock.visible
+                                        delay(500, () => toolTipBlock.visible
                                               = blockMouseArea.containsMouse)
                                     }
                                     onExited: {
@@ -691,7 +704,7 @@ Window {
                                     z: 2
                                     hoverEnabled: true
                                     onEntered: {
-                                        delay(1000, () => toolTipExit.visible
+                                        delay(500, () => toolTipExit.visible
                                               = exitMouseArea.containsMouse)
                                     }
                                     onExited: {
@@ -776,12 +789,67 @@ Window {
                 pauseButtonIcon.source = "assets/Pause.svg"
             }
         }
+
+        function onSetStatus(statusText) {
+            status.text = statusText
+        }
+
+        function onSetStatusColor(hex) {
+            status.color = "#" + hex
+            progressBackground.color = "#40" + hex
+            progressBar.color = "#" + hex
+        }
+
+        function onSetSessionTime(time) 
+        {
+            sessionDuration.text = time
+        }
+
+        function onSetProgressPercent(percent_text)
+        {
+            percentage.text = percent_text
+        }
+
+        function onSetTimeElasped(time_text)
+        {
+            timeElasped.text = time_text + " elapsed"
+        }
+
+        function onSetEngineDetails(details) 
+        {
+            engineDetails.text = details
+        }
+
+        function onSetFramesRendered(frames) 
+        {
+            framesRendered.text = qsTr(frames.toString())
+        }
+
+        function onSetProgress(percent)
+        {
+            progressBar.width = progressBackground.width * (percent/10000)
+        }
+
+        function onSetSessionPoints(points)
+        {
+            pointsEarned.text = qsTr(points.toString())
+        }
+        
+        function setOnSetUserPoints(points)
+        {
+            currentPoints.text = qsTr(points.toString())
+        }
+
+    }
+    onClosing: {
+        backend.safeClose()
+        close.accepted = true;
     }
 }
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:0.75}
+    D{i:0;formeditorZoom:1.5}
 }
 ##^##*/
 
