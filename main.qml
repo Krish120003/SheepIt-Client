@@ -841,7 +841,7 @@ Window {
 
         function onSetLastFrame(path)
         {
-            lastImage.source = path
+            lastImage.source =  "file:///" + path
         }
         function onSetLastFrameTime(time)
         {
