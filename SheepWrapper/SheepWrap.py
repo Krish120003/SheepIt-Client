@@ -1,4 +1,4 @@
-import patoolib
+import zipfile
 import time
 import sys
 import shutil
@@ -196,19 +196,24 @@ signal.signal(signal.SIGINT, hndl)
 
         logging.info(f"Job {self.job_id} - Extracting Renderer")
         self.state = "Extracting Renderer"
-        patoolib.extract_archive(
-            self.bin_file_zip, outdir=os.path.join(os.getcwd(), "worker/"), verbosity=-1
-        )
+
+        # Replace
+
+        with zipfile.ZipFile(self.bin_file_zip, "r") as zipped_file:
+            zipped_file.extractall(path=os.path.join(os.getcwd(), "worker/"))
+
         logging.info(f"Job {self.job_id} - Extraction Complete")
 
         logging.info(f"Job {self.job_id} - Extracting Project")
         self.state = "Extracting Project"
-        patoolib.extract_archive(
-            self.blend_file_zip,
-            outdir=os.path.join(os.getcwd(), "worker/"),
-            verbosity=-1,
-            password=self.password,
-        )
+
+        with zipfile.ZipFile(self.blend_file_zip, "r") as zipped_file:
+            if self.password:
+                zipped_file.extractall(path=os.path.join(os.getcwd(), "worker/"), pwd=bytes(self.password, 'utf-8'))
+            else:
+                zipped_file.extractall(path=os.path.join(os.getcwd(), "worker/"))
+
+
         logging.info(f"Job {self.job_id} - Extraction Complete")
 
         logging.info(f"Job {self.job_id} - Creating Script File")
