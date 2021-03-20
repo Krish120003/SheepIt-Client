@@ -283,6 +283,11 @@ class SheepItInterface:
             raise Exception("Incomplete Data")
 
     def logout(self, *args, **kwargs):
+        if self.job:
+            try:
+                self.job.engine.process.terminate()
+            except Exception as e:
+                logging.error(e)
         r = self.session.get(self.ops["logout"])
         logging.info("Client Logged Out")
         if args or kwargs:
