@@ -300,7 +300,7 @@ class SheepItInterface:
                 self.job.engine.process.terminate()
             except Exception as e:
                 logging.error(e)
-        r = self.session.get(self.ops["request-job"], params={"computemethod": "1"})
+        r = self.session.get(self.ops["request-job"], params={"computemethod": job_type})
         if r.status_code != 200:
             logging.error("Job Request Failed")
             raise Exception("Request Failed")
